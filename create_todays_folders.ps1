@@ -11,7 +11,7 @@ $todayAsPaddedNum = $todayAsNumNoLeadingZero.PadLeft(2, '0')
 # copy template to new folder
 Copy-Item -r template "$todayAsPaddedNum"
 
-# fetch input from https://adventofcode.com/2023/day/9/input
+# fetch input from https://adventofcode.com/2024/day/9/input
 code "$todayAsPaddedNum/input2.txt"
 code "$todayAsPaddedNum/day.py"
 code "$todayAsPaddedNum/input.txt"

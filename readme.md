@@ -1,3 +1,3 @@
-# AdventOfCode 2023 🎄
+# AdventOfCode 2024 🎄
 
-All (but day1 part2) solutions are written by me
+All solutions are written by me
