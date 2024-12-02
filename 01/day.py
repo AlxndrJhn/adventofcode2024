@@ -1,4 +1,4 @@
-import itertools
+from collections import Counter
 import os
 import re
 from collections import defaultdict
@@ -22,12 +22,13 @@ def main(filename):
     print(f"Part 1 {filename}: ", result1)
 
     # Part 2
-    result2 = 24
+    counter = Counter(col2)
+    result2 = sum([num_left * counter[num_left] for num_left in col1])
     print(f"Part 2 {filename}: ", result2)
     return result1, result2
 
 
 if __name__ == "__main__":
-    assert main("input_example.txt") == (11, 24)
-    assert main("input.txt") == (1590491, 24)
+    assert main("input_example.txt") == (11, 31)
+    assert main("input.txt") == (1590491, 22588371)
     # main("input.txt")
