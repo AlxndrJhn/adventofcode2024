@@ -49,11 +49,26 @@ def main(filename):
     print(f"Part 1 {filename}: ", result1)
 
     # Part 2
-    result2 = 24
+    TARGET = "MAS"
+    assert len(TARGET) == 3
+    center_points = defaultdict(list)
+    for row_i, col_j in itertools.product(
+        range(len(input_data_mat)), range(len(input_data_mat[0]))
+    ):
+        if input_data_mat[row_i][col_j] == TARGET[0]:
+            for dir in [UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT]:
+                if word_exists(input_data_mat, row_i, col_j, dir, TARGET, 1):
+                    center_i = row_i + dir[0]
+                    center_j = col_j + dir[1]
+                    center_points[(center_i, center_j)].append(dir)
+
+    # count the number of center points that have 2 crossing words
+    result2 = sum([1 for v in center_points.values() if len(v) >= 2])
+
     print(f"Part 2 {filename}: ", result2)
     return result1, result2
 
 
 if __name__ == "__main__":
-    assert main("input_ex.txt") == (18, 24)
-    assert main("input.txt") == (2434, 24)
+    assert main("input_ex.txt") == (18, 9)
+    assert main("input.txt") == (2434, 1835)
