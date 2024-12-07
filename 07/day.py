@@ -43,11 +43,15 @@ def main(filename):
     print(f"Part 1 {filename}: ", result1)
 
     # Part 2
-    result2 = 24
+    result2 = 0
+    ALLOWED_OPERATIONS = [math.prod, sum, lambda x: int(str(x[0]) + str(x[1]))]
+    for total, operators in cal_equations:
+        if could_be_true(total, operators, ALLOWED_OPERATIONS, []):
+            result2 += total
     print(f"Part 2 {filename}: ", result2)
     return result1, result2
 
 
 if __name__ == "__main__":
-    assert main("input_example.txt") == (3749, 24)
-    assert main("input.txt") == (267566105056, 24)
+    assert main("input_example.txt") == (3749, 11387)
+    assert main("input.txt") == (267566105056, 116094961956019)
