@@ -21,5 +21,8 @@ def main(filename):
 
 
 if __name__ == "__main__":
-    assert main("input.txt") == (42, 24)
-    # assert main("input2.txt") == (42, 24)
+    try:
+        assert main("input_example.txt") == (42, 24)
+        # assert main("input.txt") == (42, 24)
+    except AssertionError:
+        print("❌ wrong")
