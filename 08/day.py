@@ -34,14 +34,37 @@ def main(filename):
     print(f"Part 1 {filename}: ", result1)
 
     # Part 2
-    result2 = 24
+    def is_inside(i, j):
+        return 0 <= i < len(input_data_mat) and 0 <= j < len(input_data_mat[0])
+
+    results = set()
+    for frequency in unique_frequencies:
+        frequency_locations = [
+            (i, j)
+            for i in range(len(input_data_mat))
+            for j in range(len(input_data_mat[0]))
+            if input_data_mat[i][j] == frequency
+        ]
+        for f1, f2 in list(itertools.combinations(frequency_locations, 2)):
+            diff = (f1[0] - f2[0], f1[1] - f2[1])
+
+            for dir in [1, -1]:
+                current_loc = f1
+                while is_inside(current_loc[0], current_loc[1]):
+                    results.add(current_loc)
+                    current_loc = (
+                        current_loc[0] + diff[0] * dir,
+                        current_loc[1] + diff[1] * dir,
+                    )
+
+    result2 = len(results)
     print(f"Part 2 {filename}: ", result2)
     return result1, result2
 
 
 if __name__ == "__main__":
     try:
-        assert main("input_example.txt") == (14, 24)
+        assert main("input_example.txt") == (14, 34)
         assert main("input.txt") == (318, 24)
     except AssertionError:
         print("❌ wrong")
