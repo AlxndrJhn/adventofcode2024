@@ -4,7 +4,7 @@ if ($args[0] -match "^\d+$") {
     $todayAsNumNoLeadingZero = $args[0].ToString()
 }
 else {
-    $todayAsNumNoLeadingZero = (Get-Date).ToString("dd").Trim('0')
+    $todayAsNumNoLeadingZero = (Get-Date).ToString("dd").TrimStart('0')
 }
 $todayAsPaddedNum = $todayAsNumNoLeadingZero.PadLeft(2, '0')
 
