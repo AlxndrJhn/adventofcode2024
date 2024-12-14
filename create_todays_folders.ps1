@@ -12,9 +12,9 @@ $todayAsPaddedNum = $todayAsNumNoLeadingZero.PadLeft(2, '0')
 Copy-Item -r template "$todayAsPaddedNum"
 
 # fetch input from https://adventofcode.com/2024/day/9/input
-code "$todayAsPaddedNum/input.txt"
 code "$todayAsPaddedNum/day.py"
 code "$todayAsPaddedNum/input_example.txt"
+code "$todayAsPaddedNum/input.txt"
 
 # open chrome browser
 Start-Process chrome "https://adventofcode.com/2024/day/$todayAsNumNoLeadingZero"
