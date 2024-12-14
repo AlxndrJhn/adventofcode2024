@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 input*.txt
+14/output/*
+14/output.mp4
