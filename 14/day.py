@@ -84,7 +84,7 @@ def main(filename, map_size, seconds, do_render):
         plt.ylabel("Average distance to center")
         min_index = average_distance_to_center.index(min(average_distance_to_center))
         plt.annotate(
-            f"({min_index}, {average_distance_to_center[min_index]:.2f})",
+            f"{min_index+1}",
             (min_index, average_distance_to_center[min_index]),
         )
         plt.savefig(f"{this_folder}/average_distance_to_center.png")
