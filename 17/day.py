@@ -30,7 +30,7 @@ def literal_to_combo(literal, reg_A, reg_B, reg_C):
     return None
 
 
-def run_program(program, reg_A, reg_B, reg_C) -> str:
+def run_program(program, reg_A, reg_B, reg_C) -> list[int]:
     instruction_pointer = 0
     output = []
     while True:
@@ -44,7 +44,6 @@ def run_program(program, reg_A, reg_B, reg_C) -> str:
         if instruction == "adv":
             reg_A = int(reg_A / 2**combo_operand)
         elif instruction == "bxl":
-            # bitwise XOR
             reg_B = reg_B ^ literal_operand
         elif instruction == "bst":
             reg_B = combo_operand % 8
@@ -55,44 +54,65 @@ def run_program(program, reg_A, reg_B, reg_C) -> str:
         elif instruction == "bxc":
             reg_B = reg_B ^ reg_C
         elif instruction == "out":
-            output.append(combo_operand % 8)
+            to_out = combo_operand % 8
+            output.append(to_out)
         elif instruction == "bdv":
             reg_B = int(reg_A / 2**combo_operand)
         elif instruction == "cdv":
             reg_C = int(reg_A / 2**combo_operand)
 
         instruction_pointer += 2
+    return output, reg_A, reg_B, reg_C
 
-    return ",".join(map(str, output)), reg_A, reg_B, reg_C
 
-
-def main(filename, return_all=False):
+def part1(filename, return_all=False):
     input_data = open(f"{this_folder}/{filename}", "r").read()
-    # get first three numbers
     reg_A, reg_B, reg_C, *program = map(int, re.findall(r"\d+", input_data))
-
-    # Part 1
-    result1_commas, reg_A, reg_B, reg_C = run_program(program, reg_A, reg_B, reg_C)
+    result1, reg_A, reg_B, reg_C = run_program(program, reg_A, reg_B, reg_C)
+    result1_commas = ",".join(map(str, result1))
     print(f"Part 1 {filename}: ", result1_commas)
     if return_all:
         return result1_commas, reg_A, reg_B, reg_C
     return result1_commas
 
 
+def part2(filename):
+    print(f"Starting part 2 {filename}")
+    input_data = open(f"{this_folder}/{filename}", "r").read()
+    reg_A, reg_B, reg_C, *program = map(int, re.findall(r"\d+", input_data))
+    reg_A_to_test = 0
+    len_shown = 0
+    while True:
+        outputs, _, _, _ = run_program(program, reg_A_to_test, reg_B, reg_C)
+        if outputs is not None:
+            if len(outputs) > len_shown:
+                len_shown = len(outputs)
+                print(reg_A_to_test, program, outputs)
+            if outputs == program:
+                break
+        reg_A_to_test += 1
+    result2 = reg_A_to_test
+    print(f"Part 2 {filename}: ", result2)
+    return result2
+
+
 if __name__ == "__main__":
     try:
-        assert main("input_example.txt") == "4,6,3,5,6,3,5,2,1,0"
-        assert main("input_example2.txt", return_all=True) == ("", 0, 1, 9)
-        assert main("input_example3.txt", return_all=True) == ("0,1,2", 10, 0, 0)
-        assert main("input_example4.txt", return_all=True) == (
+        assert part1("input_example.txt") == "4,6,3,5,6,3,5,2,1,0"
+        assert part1("input_example2.txt", return_all=True) == ("", 0, 1, 9)
+        assert part1("input_example3.txt", return_all=True) == ("0,1,2", 10, 0, 0)
+        assert part1("input_example4.txt", return_all=True) == (
             "4,2,5,6,7,7,7,7,3,1,0",
             0,
             0,
             0,
         )
-        assert main("input_example5.txt", return_all=True) == ("", 0, 26, 0)
-        assert main("input_example6.txt", return_all=True) == ("", 0, 44354, 43690)
-        assert main("input_example7.txt") == "0,3,5,4,3,0"
-        assert main("input.txt") == "5,0,3,5,7,6,1,5,4"
+        assert part1("input_example5.txt", return_all=True) == ("", 0, 26, 0)
+        assert part1("input_example6.txt", return_all=True) == ("", 0, 44354, 43690)
+        assert part1("input_example7.txt") == "0,3,5,4,3,0"
+        assert part1("input.txt") == "5,0,3,5,7,6,1,5,4"
+
+        assert part2("input_example8.txt") == 117440
+        # assert part2("input.txt") == 1
     except AssertionError:
         print("❌ wrong")
