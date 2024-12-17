@@ -30,12 +30,7 @@ def literal_to_combo(literal, reg_A, reg_B, reg_C):
     return None
 
 
-def main(filename, return_all=False):
-    input_data = open(f"{this_folder}/{filename}", "r").read()
-    # get first three numbers
-    reg_A, reg_B, reg_C, *program = map(int, re.findall(r"\d+", input_data))
-
-    # Part 1
+def run_program(program, reg_A, reg_B, reg_C) -> str:
     instruction_pointer = 0
     output = []
     while True:
@@ -68,7 +63,16 @@ def main(filename, return_all=False):
 
         instruction_pointer += 2
 
-    result1_commas = ",".join(map(str, output))
+    return ",".join(map(str, output)), reg_A, reg_B, reg_C
+
+
+def main(filename, return_all=False):
+    input_data = open(f"{this_folder}/{filename}", "r").read()
+    # get first three numbers
+    reg_A, reg_B, reg_C, *program = map(int, re.findall(r"\d+", input_data))
+
+    # Part 1
+    result1_commas, reg_A, reg_B, reg_C = run_program(program, reg_A, reg_B, reg_C)
     print(f"Part 1 {filename}: ", result1_commas)
     if return_all:
         return result1_commas, reg_A, reg_B, reg_C
@@ -88,6 +92,7 @@ if __name__ == "__main__":
         )
         assert main("input_example5.txt", return_all=True) == ("", 0, 26, 0)
         assert main("input_example6.txt", return_all=True) == ("", 0, 44354, 43690)
+        assert main("input_example7.txt") == "0,3,5,4,3,0"
         assert main("input.txt") == "5,0,3,5,7,6,1,5,4"
     except AssertionError:
         print("❌ wrong")
