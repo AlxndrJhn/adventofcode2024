@@ -16,6 +16,5 @@ code "$todayAsPaddedNum/day.py"
 code "$todayAsPaddedNum/input_example.txt"
 code "$todayAsPaddedNum/input.txt"
 
-# open chrome browser
-Start-Process chrome "https://adventofcode.com/2024/day/$todayAsNumNoLeadingZero"
-Start-Process chrome "https://adventofcode.com/2024/day/$todayAsNumNoLeadingZero/input"
+Start-Process firefox "https://adventofcode.com/2024/day/$todayAsNumNoLeadingZero"
+Start-Process firefox "https://adventofcode.com/2024/day/$todayAsNumNoLeadingZero/input"
