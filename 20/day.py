@@ -76,7 +76,9 @@ class Map:
         return self.render()
 
 
-def number_of_cheats(map: Map, saving_min: int = 2):
+def part1(filename, saving_min):
+    input_data = open(f"{this_folder}/{filename}", "r").read().strip().split("\n")
+    map = Map([list(line) for line in input_data])
     s = map.find("S")
     e = map.find("E")
 
@@ -115,26 +117,37 @@ def number_of_cheats(map: Map, saving_min: int = 2):
             improvement = abs(top - bottom) - 2
             if improvement >= saving_min:
                 cheats_found.add((top_loc, bottom_loc))
-    return len(cheats_found)
+    result1 = len(cheats_found)
+    print(f"Part 1 {filename}: ", result1)
+    return result1
 
 
-def main(filename, saving_min):
+def part2(filename, saving_min):
     input_data = open(f"{this_folder}/{filename}", "r").read().strip().split("\n")
     map = Map([list(line) for line in input_data])
 
-    # Part 1
-    result1 = number_of_cheats(map, saving_min=saving_min)
-    print(f"Part 1 {filename}: ", result1)
+    s = map.find("S")
+    e = map.find("E")
 
-    # Part 2
-    result2 = 24
+    MAX_CHEAT_TIME = 20
+
+    flood_from_goal = map.flood_fill(e, end=s)
+    optimal_length = flood_from_goal.get(s)
+
+    result2 = 0
     print(f"Part 2 {filename}: ", result2)
-    return result1, result2
+    return result2
 
 
 if __name__ == "__main__":
     try:
-        assert main("input_example.txt", saving_min=2) == (44, 24)
-        assert main("input.txt", saving_min=100) == (1406, 24)
+        # Part 1
+        assert part1("input_example.txt", saving_min=2) == 44
+        assert part1("input.txt", saving_min=100) == 1406
+
+        # Part 2
+        assert part2("input_example.txt", saving_min=50) == 285
+        # assert part2("input.txt", saving_min=100) == 285
+
     except AssertionError:
         print("❌ wrong")
