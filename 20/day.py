@@ -3,6 +3,8 @@ import os
 import re
 from collections import defaultdict
 
+from tqdm import tqdm
+
 this_folder = "\\".join(__file__.split("\\")[:-1])
 
 
@@ -10,12 +12,31 @@ class Loc:
     row: int
     col: int
 
-    def __init__(self, row, col):
+    def __init__(self, row, col, repr_char=None):
         self.row = row
         self.col = col
+        self.repr_char = repr_char
 
     def __repr__(self):
-        return f"Loc({self.row}, {self.col})"
+        if self.repr_char is None:
+            return f"Loc({self.row}, {self.col})"
+        return self.repr_char
+
+    def __add__(self, other):
+        return Loc(self.row + other.row, self.col + other.col)
+
+    def __hash__(self):
+        return hash((self.row, self.col))
+
+    def __eq__(self, other):
+        return self.row == other.row and self.col == other.col
+
+
+UP = Loc(-1, 0, "^")
+DOWN = Loc(1, 0, "v")
+LEFT = Loc(0, -1, "<")
+RIGHT = Loc(0, 1, ">")
+DIRECTIONS = [UP, DOWN, LEFT, RIGHT]
 
 
 class Map:
@@ -23,6 +44,11 @@ class Map:
         self.data = data
         self.height = len(data)
         self.width = len(data[0])
+
+    def print(self):
+        for row in self.data:
+            print("".join(map(str, row)))
+        print()
 
     def __add__(self, other):
         assert self.height == other.height
@@ -42,6 +68,10 @@ class Map:
                     return Loc(row, col)
 
     def get(self, loc: Loc):
+        if loc.row < 0 or loc.row >= self.height:
+            return None
+        if loc.col < 0 or loc.col >= self.width:
+            return None
         return self.data[loc.row][loc.col]
 
     def get_ij(self, i, j):
@@ -50,17 +80,20 @@ class Map:
     def set(self, loc: Loc, value):
         self.data[loc.row][loc.col] = value
 
-    def flood_fill(self, start: Loc, end: Loc):
+    def flood_fill(self, start: Loc, end: Loc, max_time=None, fillable_char="."):
         new_map = Map([list(line) for line in self.data])
         new_map.set(start, 0)
-        new_map.set(end, ".")
+        new_map.set(end, fillable_char)
         queue = [start]
         while queue:
             loc = queue.pop(0)
             for direction in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
                 new_loc = Loc(loc.row + direction[0], loc.col + direction[1])
-                if new_map.get(new_loc) == ".":
-                    new_map.set(new_loc, new_map.get(loc) + 1)
+                if new_map.get(new_loc) == fillable_char:
+                    new_value = new_map.get(loc) + 1
+                    new_map.set(new_loc, new_value)
+                    if max_time is not None and new_value >= max_time:
+                        continue
                     queue.append(new_loc)
                 elif isinstance(new_map.get(new_loc), int):
                     assert new_map.get(new_loc) <= new_map.get(loc) + 1
@@ -132,9 +165,43 @@ def part2(filename, saving_min):
     MAX_CHEAT_TIME = 20
 
     flood_from_goal = map.flood_fill(e, end=s)
+    flood_from_start = map.flood_fill(s, end=e)
     optimal_length = flood_from_goal.get(s)
 
-    result2 = 0
+    cheats_per_savings = defaultdict(set)
+    for i in tqdm(range(0, flood_from_goal.height)):
+        for j in range(0, flood_from_goal.width):
+            starting_loc = Loc(i, j)
+            if map.get(starting_loc) in ["#", "E"]:
+                continue
+            cost_at_start = flood_from_start.get(starting_loc)
+            for offset_i in range(-MAX_CHEAT_TIME, MAX_CHEAT_TIME + 1):
+                for offset_j in range(-MAX_CHEAT_TIME, MAX_CHEAT_TIME + 1):
+                    cost_during = abs(offset_i) + abs(offset_j)
+                    if cost_during > MAX_CHEAT_TIME or cost_during == 0:
+                        continue
+                    exit_point = starting_loc + Loc(offset_i, offset_j)
+                    if exit_point.row < 0 or exit_point.row >= flood_from_goal.height:
+                        continue
+                    if exit_point.col < 0 or exit_point.col >= flood_from_goal.width:
+                        continue
+                    if map.get(exit_point) in ["#", "S"]:
+                        continue
+
+                    cost_to_end = flood_from_goal.get(exit_point)
+                    total_cost = cost_at_start + cost_during + cost_to_end
+                    savings = optimal_length - total_cost
+
+                    if savings >= saving_min:
+                        cheats_per_savings[savings].add((starting_loc, exit_point))
+
+    keys_sorted = sorted(cheats_per_savings.keys())
+    for key in keys_sorted:
+        print(
+            f"There are {len(cheats_per_savings[key])} cheats that save {key} picoseconds."
+        )
+
+    result2 = sum(len(cheats) for cheats in cheats_per_savings.values())
     print(f"Part 2 {filename}: ", result2)
     return result2
 
@@ -147,7 +214,7 @@ if __name__ == "__main__":
 
         # Part 2
         assert part2("input_example.txt", saving_min=50) == 285
-        # assert part2("input.txt", saving_min=100) == 285
+        assert part2("input.txt", saving_min=100) == 1006101
 
     except AssertionError:
         print("❌ wrong")
