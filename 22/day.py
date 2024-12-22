@@ -41,7 +41,7 @@ assert fwd_secret(secret=100, count=2000) == 15273692
 assert fwd_secret(secret=2024, count=2000) == 8667524
 
 
-def main(filename):
+def part1(filename):
     input_data = [
         int(x)
         for x in open(f"{this_folder}/{filename}", "r").read().strip().split("\n")
@@ -54,15 +54,28 @@ def main(filename):
         result1 += fwd_secret(secret_num, 2000)
     print(f"Part 1 {filename}: ", result1)
 
+    return result1
+
+
+def part2(filename):
+    input_data = [
+        int(x)
+        for x in open(f"{this_folder}/{filename}", "r").read().strip().split("\n")
+    ]
+
     # Part 2
-    result2 = 24
+
+    result2 = 0
+    for secret_num in input_data:
+        result2 += fwd_secret(secret_num, 2000)
     print(f"Part 2 {filename}: ", result2)
-    return result1, result2
+
+    return result2
 
 
 if __name__ == "__main__":
     try:
-        assert main("input_example.txt") == (37327623, 24)
-        assert main("input.txt") == (20506453102, 24)
+        assert part1("input_example.txt") == 37327623
+        assert part1("input.txt") == 20506453102
     except AssertionError:
         print("❌ wrong")
