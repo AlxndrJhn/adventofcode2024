@@ -191,6 +191,9 @@ def part2(filename):
     input_data = open(f"{this_folder}/{filename}", "r").read().strip().split("\n")
 
     result2 = 0
+    for line in input_data:
+        result2 += type(line, depth=25)
+    print(f"Part 2 {filename}: ", result2)
     return result2
 
 
@@ -198,5 +201,7 @@ if __name__ == "__main__":
     try:
         assert part1("input_example.txt") == 68 * 29
         assert part1("input.txt") == 156714
+        assert part2("input_example.txt") == 2379451789590
+        assert part2("input.txt") == 191139369248202
     except AssertionError:
         print("❌ wrong")
