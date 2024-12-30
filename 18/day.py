@@ -98,9 +98,29 @@ def part1(filename, w_and_h, drop_count):
     return result1
 
 
+def part2(filename, w_and_h):
+    input_data = open(f"{this_folder}/{filename}", "r").read().strip().split("\n")
+
+    m = Map([["." for _ in range(w_and_h + 1)] for _ in range(w_and_h + 1)])
+
+    for row_i, line in enumerate(input_data):
+        i, j = list(map(int, line.split(",")))
+        m.set(Loc(i, j), "#")
+        if w_and_h > 50 and row_i < 1024:
+            continue
+        from_start = m.flood_fill(Loc(0, 0))
+        if from_start.get(Loc(w_and_h, w_and_h)) == ".":
+            result2 = line
+            break
+    print(f"Part 2 {filename}: ", result2)
+    return result2
+
+
 if __name__ == "__main__":
     try:
         assert part1("input_example.txt", w_and_h=6, drop_count=12) == 22
         assert part1("input.txt", w_and_h=70, drop_count=1024) == 446
+        assert part2("input_example.txt", w_and_h=6) == "6,1"
+        assert part2("input.txt", w_and_h=70) == "39,40"
     except AssertionError:
         print("❌ wrong")
