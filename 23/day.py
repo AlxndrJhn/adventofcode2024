@@ -30,14 +30,33 @@ def main(filename):
     print(f"Part 1 {filename}: ", result1)
 
     # Part 2
-    result2 = 24
+    def bron_kerbosch(r, p, x):
+        if not p and not x:
+            return tuple(sorted(r))
+        largest = None
+        for v in p.copy():
+            r_v = r.copy()
+            r_v.add(v)
+            p_v = p.intersection(pc_to_pcs[v])
+            x_v = x.intersection(pc_to_pcs[v])
+            largest_clique = bron_kerbosch(r_v, p_v, x_v)
+            if largest_clique is not None and (
+                largest is None or len(largest_clique) > len(largest)
+            ):
+                largest = largest_clique
+            p.remove(v)
+            x.add(v)
+        return largest
+
+    result2 = ",".join(bron_kerbosch(set(), set(pc_to_pcs.keys()), set()))
+
     print(f"Part 2 {filename}: ", result2)
     return result1, result2
 
 
 if __name__ == "__main__":
     try:
-        assert main("input_example.txt") == (7, 24)
-        assert main("input.txt") == (1238, 24)
+        assert main("input_example.txt") == (7, "co,de,ka,ta")
+        assert main("input.txt") == (1238, "bg,bl,ch,fn,fv,gd,jn,kk,lk,pv,rr,tb,vw")
     except AssertionError:
         print("❌ wrong")
